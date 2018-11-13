@@ -1,0 +1,6 @@
+<testsuites name="jest tests" tests="1" failures="0" time="7.673">
+  <testsuite name="POST /api/demoFunction" errors="0" failures="0" skipped="0" timestamp="2018-11-13T23:13:58" time="4.04" tests="1">
+    <testcase classname="POST /api/demoFunction should throw a warning message if the &apos;parameter1&apos; body parameter is empty" name="POST /api/demoFunction should throw a warning message if the &apos;parameter1&apos; body parameter is empty" time="0.004">
+    </testcase>
+  </testsuite>
+</testsuites>
