@@ -15,4 +15,5 @@ Current available solutions:
 Name | Description
 -------|--------|
  [boilerplates/typescript-azure-function](./boilerplates/typescript-azure-function) | TypeScript Azure Function starter project so SPFx developers don't have to learn C# to build back-end services for their SharePoint customizations. 
+ [solutions/ModernSearch](./solutions/ModernSearch) | An end-to-end solution to build awesome search experiences using SharePoint modern UI.
 
