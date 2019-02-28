@@ -1,0 +1,1039 @@
+{
+    "source":2,
+    "revision":49,
+    "description":null,
+    "createdBy":{
+       "displayName":"Franck Cornu",
+       "url":"https://app.vssps.visualstudio.com/A9a992e5d-ff6d-43a6-8912-4ee0894b5736/_apis/Identities/141b2d29-218d-6c9e-8245-d81c573a53a7",
+       "_links":{
+          "avatar":{
+             "href":"https://dev.azure.com/aequos/_apis/GraphProfile/MemberAvatars/aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+          }
+       },
+       "id":"141b2d29-218d-6c9e-8245-d81c573a53a7",
+       "uniqueName":"franck.cornu@aequos.ca",
+       "imageUrl":"https://dev.azure.com/aequos/_api/_common/identityImage?id=141b2d29-218d-6c9e-8245-d81c573a53a7",
+       "descriptor":"aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+    },
+    "createdOn":"2019-02-19T17:40:59.767Z",
+    "modifiedBy":{
+       "displayName":"Franck Cornu",
+       "url":"https://app.vssps.visualstudio.com/A9a992e5d-ff6d-43a6-8912-4ee0894b5736/_apis/Identities/141b2d29-218d-6c9e-8245-d81c573a53a7",
+       "_links":{
+          "avatar":{
+             "href":"https://dev.azure.com/aequos/_apis/GraphProfile/MemberAvatars/aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+          }
+       },
+       "id":"141b2d29-218d-6c9e-8245-d81c573a53a7",
+       "uniqueName":"franck.cornu@aequos.ca",
+       "imageUrl":"https://dev.azure.com/aequos/_api/_common/identityImage?id=141b2d29-218d-6c9e-8245-d81c573a53a7",
+       "descriptor":"aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+    },
+    "modifiedOn":"2019-02-28T20:14:06.997Z",
+    "isDeleted":false,
+    "variables":{
+       "tenant":{
+          "value":"collaborationcorner"
+       },
+       "userName":{
+          "value":"franck.cornu@thecollaborationcorner.com"
+       },
+       "userPassword":{
+          "value":null,
+          "isSecret":true
+       }
+    },
+    "variableGroups":[
+       2,
+       3,
+       1
+    ],
+    "environments":[
+       {
+          "id":1,
+          "name":"Staging",
+          "rank":1,
+          "owner":{
+             "displayName":"Franck Cornu",
+             "url":"https://app.vssps.visualstudio.com/A9a992e5d-ff6d-43a6-8912-4ee0894b5736/_apis/Identities/141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "_links":{
+                "avatar":{
+                   "href":"https://dev.azure.com/aequos/_apis/GraphProfile/MemberAvatars/aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+                }
+             },
+             "id":"141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "uniqueName":"franck.cornu@aequos.ca",
+             "imageUrl":"https://dev.azure.com/aequos/_api/_common/identityImage?id=141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "descriptor":"aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+          },
+          "variables":{
+             "targetSite":{
+                "value":"teams/devOps_dev"
+             }
+          },
+          "variableGroups":[
+ 
+          ],
+          "preDeployApprovals":{
+             "approvals":[
+                {
+                   "rank":1,
+                   "isAutomated":true,
+                   "isNotificationOn":false,
+                   "id":1
+                }
+             ],
+             "approvalOptions":{
+                "requiredApproverCount":null,
+                "releaseCreatorCanBeApprover":false,
+                "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped":false,
+                "enforceIdentityRevalidation":false,
+                "timeoutInMinutes":0,
+                "executionOrder":1
+             }
+          },
+          "deployStep":{
+             "id":2
+          },
+          "postDeployApprovals":{
+             "approvals":[
+                {
+                   "rank":1,
+                   "isAutomated":true,
+                   "isNotificationOn":false,
+                   "id":3
+                }
+             ],
+             "approvalOptions":{
+                "requiredApproverCount":null,
+                "releaseCreatorCanBeApprover":false,
+                "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped":false,
+                "enforceIdentityRevalidation":false,
+                "timeoutInMinutes":0,
+                "executionOrder":2
+             }
+          },
+          "deployPhases":[
+             {
+                "deploymentInput":{
+                   "parallelExecution":{
+                      "parallelExecutionType":0
+                   },
+                   "skipArtifactsDownload":false,
+                   "artifactsDownloadInput":{
+                      "downloadInputs":[
+ 
+                      ]
+                   },
+                   "queueId":50,
+                   "demands":[
+ 
+                   ],
+                   "enableAccessToken":false,
+                   "timeoutInMinutes":0,
+                   "jobCancelTimeoutInMinutes":1,
+                   "condition":"succeeded()",
+                   "overrideInputs":{
+ 
+                   }
+                },
+                "rank":1,
+                "phaseType":1,
+                "name":"Agent job",
+                "refName":null,
+                "workflowTasks":[
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"31c75bbb-bcdf-4706-8d7c-4da6a1959bc2",
+                      "version":"0.*",
+                      "name":"Use Node 8.x",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "versionSpec":"8.x",
+                         "checkLatest":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"fe47e961-9fa8-4106-8639-368c022d43ad",
+                      "version":"1.*",
+                      "name":"npm install office 365 cli",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "command":"custom",
+                         "workingDir":"",
+                         "verbose":"false",
+                         "customCommand":"install -g @pnp/office365-cli",
+                         "customRegistry":"useNpmrc",
+                         "customFeed":"",
+                         "customEndpoint":"",
+                         "publishRegistry":"useExternalRegistry",
+                         "publishFeed":"",
+                         "publishPackageMetadata":"true",
+                         "publishEndpoint":""
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo login",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo login https://$(tenant).sharepoint.com/$(targetSite) --authType password --userName $(userName) --password $(userPassword)\n",
+                         "workingDirectory":"",
+                         "failOnStderr":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo app add (site collection)",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo app add -u https://$(tenant).sharepoint.com/$(targetSite) -p azure-dev-ops.sppkg --overwrite --verbose -s sitecollection",
+                         "workingDirectory":"$(System.DefaultWorkingDirectory)/SPFx Package/drop/sharepoint/solution",
+                         "failOnStderr":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo deploy app (site collection)",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo app deploy --name azure-dev-ops.sppkg -u https://$(tenant).sharepoint.com/$(targetSite) -s sitecollection --verbose ",
+                         "workingDirectory":"",
+                         "failOnStderr":"false"
+                      }
+                   }
+                ]
+             }
+          ],
+          "environmentOptions":{
+             "emailNotificationType":"OnlyOnFailure",
+             "emailRecipients":"release.environment.owner;release.creator",
+             "skipArtifactsDownload":false,
+             "timeoutInMinutes":0,
+             "enableAccessToken":false,
+             "publishDeploymentStatus":true,
+             "badgeEnabled":true,
+             "autoLinkWorkItems":false,
+             "pullRequestDeploymentEnabled":false
+          },
+          "demands":[
+ 
+          ],
+          "conditions":[
+             {
+                "name":"ReleaseStarted",
+                "conditionType":1,
+                "value":""
+             },
+             {
+                "name":"SPFx Package",
+                "conditionType":4,
+                "value":"{\"sourceBranch\":\"develop\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false}"
+             }
+          ],
+          "executionPolicy":{
+             "concurrencyCount":1,
+             "queueDepthCount":0
+          },
+          "schedules":[
+ 
+          ],
+          "currentRelease":{
+             "id":36,
+             "url":"https://vsrm.dev.azure.com/aequos/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/_apis/Release/releases/36",
+             "_links":{
+ 
+             }
+          },
+          "retentionPolicy":{
+             "daysToKeep":30,
+             "releasesToKeep":3,
+             "retainBuild":true
+          },
+          "processParameters":{
+ 
+          },
+          "properties":{
+ 
+          },
+          "preDeploymentGates":{
+             "id":0,
+             "gatesOptions":null,
+             "gates":[
+ 
+             ]
+          },
+          "postDeploymentGates":{
+             "id":0,
+             "gatesOptions":null,
+             "gates":[
+ 
+             ]
+          },
+          "environmentTriggers":[
+ 
+          ],
+          "badgeUrl":"https://vsrm.dev.azure.com/aequos/_apis/public/Release/badge/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/1/1"
+       },
+       {
+          "id":6,
+          "name":"PreProduction",
+          "rank":2,
+          "owner":{
+             "displayName":"Franck Cornu",
+             "url":"https://app.vssps.visualstudio.com/A9a992e5d-ff6d-43a6-8912-4ee0894b5736/_apis/Identities/141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "_links":{
+                "avatar":{
+                   "href":"https://dev.azure.com/aequos/_apis/GraphProfile/MemberAvatars/aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+                }
+             },
+             "id":"141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "uniqueName":"franck.cornu@aequos.ca",
+             "imageUrl":"https://dev.azure.com/aequos/_api/_common/identityImage?id=141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "descriptor":"aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+          },
+          "variables":{
+             "targetSite":{
+                "value":"teams/devOps_preprod"
+             }
+          },
+          "variableGroups":[
+ 
+          ],
+          "preDeployApprovals":{
+             "approvals":[
+                {
+                   "rank":1,
+                   "isAutomated":true,
+                   "isNotificationOn":false,
+                   "id":16
+                }
+             ],
+             "approvalOptions":{
+                "requiredApproverCount":null,
+                "releaseCreatorCanBeApprover":false,
+                "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped":false,
+                "enforceIdentityRevalidation":false,
+                "timeoutInMinutes":0,
+                "executionOrder":1
+             }
+          },
+          "deployStep":{
+             "id":19
+          },
+          "postDeployApprovals":{
+             "approvals":[
+                {
+                   "rank":1,
+                   "isAutomated":true,
+                   "isNotificationOn":false,
+                   "id":20
+                }
+             ],
+             "approvalOptions":{
+                "requiredApproverCount":null,
+                "releaseCreatorCanBeApprover":false,
+                "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped":false,
+                "enforceIdentityRevalidation":false,
+                "timeoutInMinutes":0,
+                "executionOrder":2
+             }
+          },
+          "deployPhases":[
+             {
+                "deploymentInput":{
+                   "parallelExecution":{
+                      "parallelExecutionType":0
+                   },
+                   "skipArtifactsDownload":false,
+                   "artifactsDownloadInput":{
+                      "downloadInputs":[
+ 
+                      ]
+                   },
+                   "queueId":50,
+                   "demands":[
+ 
+                   ],
+                   "enableAccessToken":false,
+                   "timeoutInMinutes":0,
+                   "jobCancelTimeoutInMinutes":1,
+                   "condition":"succeeded()",
+                   "overrideInputs":{
+ 
+                   }
+                },
+                "rank":1,
+                "phaseType":1,
+                "name":"Agent job",
+                "refName":null,
+                "workflowTasks":[
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"31c75bbb-bcdf-4706-8d7c-4da6a1959bc2",
+                      "version":"0.*",
+                      "name":"Use Node 8.x",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "versionSpec":"8.x",
+                         "checkLatest":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"fe47e961-9fa8-4106-8639-368c022d43ad",
+                      "version":"1.*",
+                      "name":"npm install office 365 cli",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "command":"custom",
+                         "workingDir":"",
+                         "verbose":"false",
+                         "customCommand":"install -g @pnp/office365-cli",
+                         "customRegistry":"useNpmrc",
+                         "customFeed":"",
+                         "customEndpoint":"",
+                         "publishRegistry":"useExternalRegistry",
+                         "publishFeed":"",
+                         "publishPackageMetadata":"true",
+                         "publishEndpoint":""
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo login",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo login https://$(tenant).sharepoint.com/$(targetSite) --authType password --userName $(userName) --password $(userPassword)\n",
+                         "workingDirectory":"",
+                         "failOnStderr":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo app add (site collection)",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo app add -u https://$(tenant).sharepoint.com/$(targetSite) -p azure-dev-ops.sppkg --overwrite --verbose -s sitecollection",
+                         "workingDirectory":"$(System.DefaultWorkingDirectory)/SPFx Package/drop/sharepoint/solution",
+                         "failOnStderr":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo deploy app (site collection)",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo app deploy --name azure-dev-ops.sppkg -u https://$(tenant).sharepoint.com/$(targetSite) -s sitecollection --verbose ",
+                         "workingDirectory":"",
+                         "failOnStderr":"false"
+                      }
+                   }
+                ]
+             }
+          ],
+          "environmentOptions":{
+             "emailNotificationType":"OnlyOnFailure",
+             "emailRecipients":"release.environment.owner;release.creator",
+             "skipArtifactsDownload":false,
+             "timeoutInMinutes":0,
+             "enableAccessToken":false,
+             "publishDeploymentStatus":true,
+             "badgeEnabled":true,
+             "autoLinkWorkItems":false,
+             "pullRequestDeploymentEnabled":false
+          },
+          "demands":[
+ 
+          ],
+          "conditions":[
+             {
+                "name":"ReleaseStarted",
+                "conditionType":1,
+                "value":""
+             },
+             {
+                "name":"SPFx Package",
+                "conditionType":4,
+                "value":"{\"sourceBranch\":\"release/*\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false}"
+             },
+             {
+                "name":"SPFx Package",
+                "conditionType":4,
+                "value":"{\"sourceBranch\":\"hotfix/*\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false}"
+             }
+          ],
+          "executionPolicy":{
+             "concurrencyCount":1,
+             "queueDepthCount":0
+          },
+          "schedules":[
+ 
+          ],
+          "currentRelease":{
+             "id":37,
+             "url":"https://vsrm.dev.azure.com/aequos/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/_apis/Release/releases/37",
+             "_links":{
+ 
+             }
+          },
+          "retentionPolicy":{
+             "daysToKeep":30,
+             "releasesToKeep":3,
+             "retainBuild":true
+          },
+          "processParameters":{
+ 
+          },
+          "properties":{
+ 
+          },
+          "preDeploymentGates":{
+             "id":0,
+             "gatesOptions":null,
+             "gates":[
+ 
+             ]
+          },
+          "postDeploymentGates":{
+             "id":0,
+             "gatesOptions":null,
+             "gates":[
+ 
+             ]
+          },
+          "environmentTriggers":[
+ 
+          ],
+          "badgeUrl":"https://vsrm.dev.azure.com/aequos/_apis/public/Release/badge/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/1/6"
+       },
+       {
+          "id":7,
+          "name":"Production",
+          "rank":3,
+          "owner":{
+             "displayName":"Franck Cornu",
+             "url":"https://app.vssps.visualstudio.com/A9a992e5d-ff6d-43a6-8912-4ee0894b5736/_apis/Identities/141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "_links":{
+                "avatar":{
+                   "href":"https://dev.azure.com/aequos/_apis/GraphProfile/MemberAvatars/aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+                }
+             },
+             "id":"141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "uniqueName":"franck.cornu@aequos.ca",
+             "imageUrl":"https://dev.azure.com/aequos/_api/_common/identityImage?id=141b2d29-218d-6c9e-8245-d81c573a53a7",
+             "descriptor":"aad.MTQxYjJkMjktMjE4ZC03YzllLTgyNDUtZDgxYzU3M2E1M2E3"
+          },
+          "variables":{
+             "targetSite":{
+                "value":"teams/devOps_prod"
+             }
+          },
+          "variableGroups":[
+ 
+          ],
+          "preDeployApprovals":{
+             "approvals":[
+                {
+                   "rank":1,
+                   "isAutomated":true,
+                   "isNotificationOn":false,
+                   "id":17
+                }
+             ],
+             "approvalOptions":{
+                "requiredApproverCount":null,
+                "releaseCreatorCanBeApprover":false,
+                "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped":false,
+                "enforceIdentityRevalidation":false,
+                "timeoutInMinutes":0,
+                "executionOrder":1
+             }
+          },
+          "deployStep":{
+             "id":18
+          },
+          "postDeployApprovals":{
+             "approvals":[
+                {
+                   "rank":1,
+                   "isAutomated":true,
+                   "isNotificationOn":false,
+                   "id":21
+                }
+             ],
+             "approvalOptions":{
+                "requiredApproverCount":null,
+                "releaseCreatorCanBeApprover":false,
+                "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped":false,
+                "enforceIdentityRevalidation":false,
+                "timeoutInMinutes":0,
+                "executionOrder":2
+             }
+          },
+          "deployPhases":[
+             {
+                "deploymentInput":{
+                   "parallelExecution":{
+                      "parallelExecutionType":0
+                   },
+                   "skipArtifactsDownload":false,
+                   "artifactsDownloadInput":{
+                      "downloadInputs":[
+ 
+                      ]
+                   },
+                   "queueId":50,
+                   "demands":[
+ 
+                   ],
+                   "enableAccessToken":false,
+                   "timeoutInMinutes":0,
+                   "jobCancelTimeoutInMinutes":1,
+                   "condition":"succeeded()",
+                   "overrideInputs":{
+ 
+                   }
+                },
+                "rank":1,
+                "phaseType":1,
+                "name":"Agent job",
+                "refName":null,
+                "workflowTasks":[
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"31c75bbb-bcdf-4706-8d7c-4da6a1959bc2",
+                      "version":"0.*",
+                      "name":"Use Node 8.x",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "versionSpec":"8.x",
+                         "checkLatest":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"fe47e961-9fa8-4106-8639-368c022d43ad",
+                      "version":"1.*",
+                      "name":"npm install office 365 cli",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "command":"custom",
+                         "workingDir":"",
+                         "verbose":"false",
+                         "customCommand":"install -g @pnp/office365-cli",
+                         "customRegistry":"useNpmrc",
+                         "customFeed":"",
+                         "customEndpoint":"",
+                         "publishRegistry":"useExternalRegistry",
+                         "publishFeed":"",
+                         "publishPackageMetadata":"true",
+                         "publishEndpoint":""
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo login",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo login https://$(tenant).sharepoint.com/$(targetSite) --authType password --userName $(userName) --password $(userPassword)\n",
+                         "workingDirectory":"",
+                         "failOnStderr":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo app add (site collection)",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo app add -u https://$(tenant).sharepoint.com/$(targetSite) -p azure-dev-ops.sppkg --overwrite --verbose -s sitecollection",
+                         "workingDirectory":"$(System.DefaultWorkingDirectory)/SPFx Package/drop/sharepoint/solution",
+                         "failOnStderr":"false"
+                      }
+                   },
+                   {
+                      "environment":{
+ 
+                      },
+                      "taskId":"d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+                      "version":"2.*",
+                      "name":"spo deploy app (site collection)",
+                      "refName":"",
+                      "enabled":true,
+                      "alwaysRun":false,
+                      "continueOnError":false,
+                      "timeoutInMinutes":0,
+                      "definitionType":"task",
+                      "overrideInputs":{
+ 
+                      },
+                      "condition":"succeeded()",
+                      "inputs":{
+                         "script":"o365 spo app deploy --name azure-dev-ops.sppkg -u https://$(tenant).sharepoint.com/$(targetSite) -s sitecollection --verbose ",
+                         "workingDirectory":"",
+                         "failOnStderr":"false"
+                      }
+                   }
+                ]
+             }
+          ],
+          "environmentOptions":{
+             "emailNotificationType":"OnlyOnFailure",
+             "emailRecipients":"release.environment.owner;release.creator",
+             "skipArtifactsDownload":false,
+             "timeoutInMinutes":0,
+             "enableAccessToken":false,
+             "publishDeploymentStatus":true,
+             "badgeEnabled":true,
+             "autoLinkWorkItems":false,
+             "pullRequestDeploymentEnabled":false
+          },
+          "demands":[
+ 
+          ],
+          "conditions":[
+             {
+                "name":"ReleaseStarted",
+                "conditionType":1,
+                "value":""
+             },
+             {
+                "name":"SPFx Package",
+                "conditionType":4,
+                "value":"{\"sourceBranch\":\"master\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false}"
+             }
+          ],
+          "executionPolicy":{
+             "concurrencyCount":1,
+             "queueDepthCount":0
+          },
+          "schedules":[
+ 
+          ],
+          "currentRelease":{
+             "id":38,
+             "url":"https://vsrm.dev.azure.com/aequos/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/_apis/Release/releases/38",
+             "_links":{
+ 
+             }
+          },
+          "retentionPolicy":{
+             "daysToKeep":30,
+             "releasesToKeep":3,
+             "retainBuild":true
+          },
+          "processParameters":{
+ 
+          },
+          "properties":{
+ 
+          },
+          "preDeploymentGates":{
+             "id":0,
+             "gatesOptions":null,
+             "gates":[
+ 
+             ]
+          },
+          "postDeploymentGates":{
+             "id":0,
+             "gatesOptions":null,
+             "gates":[
+ 
+             ]
+          },
+          "environmentTriggers":[
+ 
+          ],
+          "badgeUrl":"https://vsrm.dev.azure.com/aequos/_apis/public/Release/badge/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/1/7"
+       }
+    ],
+    "artifacts":[
+       {
+          "sourceId":"701e54a1-aa4f-46b5-9a48-eb2f58352fa7:3",
+          "type":"Build",
+          "alias":"SPFx Package",
+          "definitionReference":{
+             "artifactSourceDefinitionUrl":{
+                "id":"https://dev.azure.com/aequos/_permalink/_build/index?collectionId=7b075796-1a94-45b5-984e-677c3d1450d9&projectId=701e54a1-aa4f-46b5-9a48-eb2f58352fa7&definitionId=3",
+                "name":""
+             },
+             "defaultVersionBranch":{
+                "id":"",
+                "name":""
+             },
+             "defaultVersionSpecific":{
+                "id":"",
+                "name":""
+             },
+             "defaultVersionTags":{
+                "id":"",
+                "name":""
+             },
+             "defaultVersionType":{
+                "id":"latestWithBuildDefinitionBranchAndTagsType",
+                "name":"Latest from the build pipeline default branch with tags"
+             },
+             "definition":{
+                "id":"3",
+                "name":"ModernSearch-CI"
+             },
+             "definitions":{
+                "id":"",
+                "name":""
+             },
+             "IsMultiDefinitionType":{
+                "id":"False",
+                "name":"False"
+             },
+             "project":{
+                "id":"701e54a1-aa4f-46b5-9a48-eb2f58352fa7",
+                "name":"ModernSearch"
+             },
+             "repository":{
+                "id":"",
+                "name":""
+             }
+          },
+          "isPrimary":true,
+          "isRetained":false
+       }
+    ],
+    "triggers":[
+       {
+          "artifactAlias":"SPFx Package",
+          "triggerConditions":[
+             {
+                "sourceBranch":"develop",
+                "tags":[
+ 
+                ],
+                "useBuildDefinitionBranch":false,
+                "createReleaseOnBuildTagging":false
+             },
+             {
+                "sourceBranch":"release/*",
+                "tags":[
+ 
+                ],
+                "useBuildDefinitionBranch":false,
+                "createReleaseOnBuildTagging":false
+             },
+             {
+                "sourceBranch":"hotfix/*",
+                "tags":[
+ 
+                ],
+                "useBuildDefinitionBranch":false,
+                "createReleaseOnBuildTagging":false
+             },
+             {
+                "sourceBranch":"master",
+                "tags":[
+ 
+                ],
+                "useBuildDefinitionBranch":false,
+                "createReleaseOnBuildTagging":false
+             }
+          ],
+          "triggerType":1
+       }
+    ],
+    "releaseNameFormat":"$(Build.BuildNumber)",
+    "tags":[
+ 
+    ],
+    "pipelineProcess":{
+       "type":1
+    },
+    "properties":{
+       "DefinitionCreationSource":{
+          "$type":"System.String",
+          "$value":"Other"
+       }
+    },
+    "id":1,
+    "name":"Azure Dev Ops SPFx - Release",
+    "path":"\\",
+    "projectReference":null,
+    "url":"https://vsrm.dev.azure.com/aequos/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/_apis/Release/definitions/1",
+    "_links":{
+       "self":{
+          "href":"https://vsrm.dev.azure.com/aequos/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/_apis/Release/definitions/1"
+       },
+       "web":{
+          "href":"https://dev.azure.com/aequos/701e54a1-aa4f-46b5-9a48-eb2f58352fa7/_release?definitionId=1"
+       }
+    }
+ }
