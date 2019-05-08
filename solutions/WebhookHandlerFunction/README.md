@@ -4,7 +4,9 @@
 
 ## Description
 
-This function allows you to handle updates on a **list** by using a SharePoint webhook and a TypeScript Azure function. It has been implemented using the following [boilerplate](https://github.com/aequos-solutions/sp-solutions/tree/master/boilerplates/typescript-azure-function). 
+This function allows you to handle updates on a **list** by using a SharePoint webhook and a TypeScript Azure function. It has been implemented using the following [boilerplate](https://github.com/aequos-solutions/sp-solutions/tree/master/boilerplates/typescript-azure-function).
+
+<p align="center"><img src="./images/webhook.gif"/><p>
 
 ### Why an azure function instead of a Microsoft Flow or Logic App trigger?
 
