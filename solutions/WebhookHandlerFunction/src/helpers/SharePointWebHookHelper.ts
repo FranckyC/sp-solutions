@@ -9,8 +9,13 @@ export class SharePointWebHookHelper {
     // Default renewal period equals to 180 days
     private _expirationRenewalDays: number = 180;
 
-    public get expirationRenewalDays(): number { return this._expirationRenewalDays; }
-    public set expirationRenewalDays(value: number) { this._expirationRenewalDays = value; }
+    public get expirationRenewalDays(): number { 
+        return this._expirationRenewalDays; 
+    }
+
+    public set expirationRenewalDays(value: number) {
+        this._expirationRenewalDays = value; 
+    }
         
     private _webUrl: string;
     private _token: string;

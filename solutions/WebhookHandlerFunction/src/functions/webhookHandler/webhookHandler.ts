@@ -60,9 +60,10 @@ export async function run(context: Context, req: HttpRequest): Promise<HttpRespo
           
           // Get an acces token
           const token = await authenticationHelper.getToken();
-          const webhookHelper = new SharePointWebHookHelper(webUrl, token.accessToken);
-          webhookHelper.expirationRenewalDays;
-            
+ 
+          const webhookHelper = new SharePointWebHookHelper(webUrl, token.accessToken); 
+          webhookHelper.expirationRenewalDays = 30;
+
           // Setting to null corresponds to 180 days expiration by default
           const subscriptionData: IWebhookSubcriptionData = {
             expirationDateTime: null,
