@@ -1,20 +1,21 @@
-import * as Handlebars from                                                                           'handlebars';
-import ISearchService from                                                                            './ISearchService';
+import * as Handlebars from 'handlebars';
+import ISearchService from './ISearchService';
 import { ISearchResults, ISearchResult, IRefinementResult, IRefinementValue, IRefinementFilter, IPromotedResult } from '../../models/ISearchResult';
-import { sp, SearchQuery, SearchResults, SPRest, Sort, SortDirection, SearchSuggestQuery } from                                                '@pnp/sp';
-import { Logger, LogLevel, ConsoleListener } from                                                     '@pnp/logging';
-import { IWebPartContext } from                                                                       '@microsoft/sp-webpart-base';
-import { Text } from                                                                                  '@microsoft/sp-core-library';
-import {sortBy, groupBy} from                                                                         '@microsoft/sp-lodash-subset';
+import { sp, SearchQuery, SearchResults, SPRest, Sort, SortDirection, SearchSuggestQuery } from '@pnp/sp';
+import { Logger, LogLevel, ConsoleListener } from '@pnp/logging';
+import { IWebPartContext } from '@microsoft/sp-webpart-base';
+import { Text } from '@microsoft/sp-core-library';
+import { sortBy, groupBy } from '@microsoft/sp-lodash-subset';
 const mapKeys: any = require('lodash/mapKeys');
 const mapValues: any = require('lodash/mapValues');
-import LocalizationHelper from                                                                        '../../helpers/LocalizationHelper';
+import LocalizationHelper from '../../helpers/LocalizationHelper';
 import "@pnp/polyfill-ie11";
+import IRefinerConfiguration from '../../models/IRefinerConfiguration';
+import { ISearchServiceConfiguration } from '../../models/ISearchServiceConfiguration';
 
 declare var System: any;
 
 class SearchService implements ISearchService {
-    private _helper = null;
     private _initialSearchResult: SearchResults = null;
     private _resultsCount: number;
     private _context: IWebPartContext;
@@ -23,6 +24,8 @@ class SearchService implements ISearchService {
     private _resultSourceId: string;
     private _sortList: Sort[];
     private _enableQueryRules: boolean;
+    private _refiners: IRefinerConfiguration[];
+    private _refinementFilters: IRefinementFilter[];
 
     public get resultsCount(): number { return this._resultsCount; }
     public set resultsCount(value: number) { this._resultsCount = value; }
@@ -41,6 +44,12 @@ class SearchService implements ISearchService {
 
     public set enableQueryRules(value: boolean) { this._enableQueryRules = value; }
     public get enableQueryRules(): boolean { return this._enableQueryRules; }
+
+    public set refiners(value: IRefinerConfiguration[]) { this._refiners = value; }
+    public get refiners(): IRefinerConfiguration[] { return this._refiners; }
+
+    public set refinementFilters(value: IRefinementFilter[]) { this._refinementFilters = value; }
+    public get refinementFilters(): IRefinementFilter[] { return this._refinementFilters; }
 
     private _localPnPSetup: SPRest;
 
@@ -66,7 +75,7 @@ class SearchService implements ISearchService {
      * @param query The search query in KQL format
      * @return The search results
      */
-    public async search(query: string, refiners?: string, refinementFilters?: IRefinementFilter[], pageNumber?: number): Promise<ISearchResults> {
+    public async search(query: string, pageNumber?: number): Promise<ISearchResults> {
 
         let searchQuery: SearchQuery = {};
         let sortedRefiners: string[] = [];
@@ -75,6 +84,19 @@ class SearchService implements ISearchService {
         let page = pageNumber ? pageNumber : 1;
 
         searchQuery.ClientType = 'ContentSearchRegular';
+        searchQuery.Properties = [{
+            Name: "EnableDynamicGroups",
+            Value: {
+                BoolVal: true,
+                QueryPropertyValueTypeIndex: 3
+            }
+        }, {
+            Name: "EnableMultiGeoSearch",
+            Value: {
+                BoolVal: true,
+                QueryPropertyValueTypeIndex: 3
+            }
+        }];
         searchQuery.Querytext = query;
 
         // Disable query rules by default if not specified
@@ -83,32 +105,37 @@ class SearchService implements ISearchService {
         if (this._resultSourceId) {
             searchQuery.SourceId = this._resultSourceId;
         }
-        
+
         // To be able to use search query variable according to the current context
         // http://www.techmikael.com/2015/07/sharepoint-rest-do-support-query.html
-        searchQuery.QueryTemplate = this._queryTemplate;        
+        searchQuery.QueryTemplate = this._queryTemplate;
 
         searchQuery.RowLimit = this._resultsCount ? this._resultsCount : 50;
         searchQuery.SelectProperties = this._selectedProperties;
         searchQuery.TrimDuplicates = false;
         searchQuery.SortList = this._sortList ? this._sortList : [];
 
-        if (refiners) {
+        if (this.refiners) {
             // Get the refiners order specified in the property pane
-            sortedRefiners = refiners.split(',');
-            searchQuery.Refiners = refiners ? refiners : '';
+            sortedRefiners = this.refiners.map(e => e.refinerName);
+            searchQuery.Refiners = sortedRefiners.join(',');
         }
 
-        if (refinementFilters) {
-            if (refinementFilters.length > 0) {
-                searchQuery.RefinementFilters = [this._buildRefinementQueryString(refinementFilters)];
+        if (this.refinementFilters) {
+            if (this.refinementFilters.length > 0) {
+                searchQuery.RefinementFilters = this._buildRefinementQueryString(this.refinementFilters);
             }
         }
 
         let results: ISearchResults = {
+            QueryKeywords: query,
             RelevantResults: [],
             RefinementResults: [],
-            TotalRows: 0,
+            PaginationInformation: {
+                CurrentPage: pageNumber,
+                MaxResultsPerPage: this.resultsCount,
+                TotalRows: 0
+            }
         };
 
         try {
@@ -134,15 +161,16 @@ class SearchService implements ISearchService {
                 let refinementResultsRows = r2.RawSearchResults.PrimaryQueryResult.RefinementResults;
 
                 const refinementRows: any = refinementResultsRows ? refinementResultsRows.Refiners : [];
-                if (refinementRows.length > 0) {
-
+                if (refinementRows.length > 0 && (<any>window).searchHBHelper === undefined) {
                     const component = await import(
                         /* webpackChunkName: 'search-handlebars-helpers' */
                         'handlebars-helpers'
                     );
-                    this._helper = component({
-                        handlebars: Handlebars
-                    });
+                    if ((<any>window).searchHBHelper === undefined) {
+                        (<any>window).searchHBHelper = component({
+                            handlebars: Handlebars
+                        });
+                    }
                 }
 
                 // Map search results
@@ -194,14 +222,14 @@ class SearchService implements ISearchService {
                 // Query rules handling
                 const secondaryQueryResults = r2.RawSearchResults.SecondaryQueryResults;
                 if (Array.isArray(secondaryQueryResults) && secondaryQueryResults.length > 0) {
-                    
+
                     let promotedResults: IPromotedResult[] = [];
-                    
+
                     secondaryQueryResults.map((e) => {
 
                         // Best bets are mapped through the "SpecialTermResults" https://msdn.microsoft.com/en-us/library/dd907265(v=office.12).aspx
                         if (e.SpecialTermResults) {
-                            
+
                             e.SpecialTermResults.Results.map((result) => {
                                 promotedResults.push({
                                     Title: result.Title,
@@ -209,7 +237,7 @@ class SearchService implements ISearchService {
                                     Description: result.Description
                                 } as IPromotedResult);
                             });
-                        }                        
+                        }
                     });
 
                     results.PromotedResults = promotedResults;
@@ -227,7 +255,7 @@ class SearchService implements ISearchService {
 
                 results.RelevantResults = relevantResults;
                 results.RefinementResults = refinementResults;
-                results.TotalRows = this._initialSearchResult.TotalRows;
+                results.PaginationInformation.TotalRows = this._initialSearchResult.TotalRows;
             }
             return results;
 
@@ -273,6 +301,19 @@ class SearchService implements ISearchService {
         }
     }
 
+    public getConfiguration(): ISearchServiceConfiguration {
+        return {
+            enableQueryRules: this.enableQueryRules,
+            queryTemplate: this.queryTemplate,
+            refinementFilters: this.refinementFilters,
+            refiners: this.refiners,
+            resultSourceId: this.resultSourceId,
+            resultsCount: this.resultsCount,
+            selectedProperties: this.selectedProperties,
+            sortList: this.sortList
+        };
+    }
+
     /**
      * Gets the icon corresponding to the file name extension
      * @param filename The file name (ex: file.pdf)
@@ -280,14 +321,14 @@ class SearchService implements ISearchService {
     private async _mapToIcon(filename: string): Promise<string> {
 
         const webAbsoluteUrl = this._context.pageContext.web.absoluteUrl;
-        
+
         try {
             let encodedFileName = filename ? filename.replace(/['']/g, '') : '';
             const queryStringIndex = encodedFileName.indexOf('?');
             if (queryStringIndex !== -1) { // filename with query string leads to 400 error.
                 encodedFileName = encodedFileName.slice(0, queryStringIndex);
             }
-            const iconFileName = await this._localPnPSetup.web.mapToIcon(encodedFileName, 1);
+            const iconFileName = await this._localPnPSetup.web.mapToIcon(encodeURIComponent(encodedFileName), 1);
             const iconUrl = webAbsoluteUrl + '/_layouts/15/images/' + iconFileName;
 
             return iconUrl;
@@ -308,10 +349,10 @@ class SearchService implements ISearchService {
         const matches = inputValue.match(iso8061rgx);
 
         let updatedInputValue = inputValue;
-        
-        if (matches) {            
+
+        if (matches) {
             matches.map(match => {
-                updatedInputValue = updatedInputValue.replace(match, this._helper.moment(match, "LL", { lang: this._context.pageContext.cultureInfo.currentUICultureName }));
+                updatedInputValue = updatedInputValue.replace(match, (<any>window).searchHBHelper.moment(match, "LL", { lang: this._context.pageContext.cultureInfo.currentUICultureName }));
             });
         }
 
@@ -322,49 +363,25 @@ class SearchService implements ISearchService {
      * Build the refinement condition in FQL format
      * @param selectedFilters The selected filter array
      */
-    private _buildRefinementQueryString(selectedFilters: IRefinementFilter[]): string {
+    private _buildRefinementQueryString(selectedFilters: IRefinementFilter[]): string[] {
 
         let refinementQueryConditions: string[] = [];
-        let refinementQueryString: string = null;
 
-        // Conditions between values inside a refiner property 
-        const refinementFilters = mapValues(groupBy(selectedFilters, 'FilterName'), (values) => {
-            const refinementFilter = values.map((filter) => {
-                return filter.Value.RefinementToken;
-            });
+        selectedFilters.map(filter => {
+            if (filter.Values.length > 1) {
 
-            return refinementFilter.length > 1 ? Text.format('and({0})', refinementFilter) : refinementFilter.toString();
+                // A refiner can have multiple values selected in a multi or mon multi selection scenario
+                // The correct operator is determined by the refiner display template according to its behavior
+                const conditions = filter.Values.map(value => { return value.RefinementToken; });
+                refinementQueryConditions.push(`${filter.FilterName}:${filter.Operator}(${conditions.join(',')})`);
+            } else {
+                if (filter.Values.length === 1) {
+                    refinementQueryConditions.push(`${filter.FilterName}:${filter.Values[0].RefinementToken}`);
+                }
+            }
         });
 
-        mapKeys(refinementFilters, (value, key) => {
-            refinementQueryConditions.push(key + ':' + value);
-        });
-
-        const conditionsCount = refinementQueryConditions.length;
-
-        switch (true) {
-
-            // No filters
-            case (conditionsCount === 0): {
-                refinementQueryString = null;
-                break;
-            }
-
-            // Just one filter
-            case (conditionsCount === 1): {
-                refinementQueryString = refinementQueryConditions[0].toString();
-                break;
-            }
-
-            // Multiple filters
-            case (conditionsCount > 1): {
-                // Conditions between refiner properties
-                refinementQueryString = Text.format('and({0})', refinementQueryConditions.toString());
-                break;
-            }
-        }
-
-        return refinementQueryString;
+        return refinementQueryConditions;
     }
 }
 

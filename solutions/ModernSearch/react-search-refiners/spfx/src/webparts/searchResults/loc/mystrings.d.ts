@@ -17,8 +17,9 @@ declare interface ISearchResultsWebPartStrings {
     FilterPanelTitle: string;
     FilterResultsButtonLabel: string;
     SelectedFiltersLabel: string;
+    SearchResultsLabel: string;
     RemoveAllFiltersLabel: string;
-    ShowPagingLabel: string;
+    UsePaginationWebPartLabel: string;
     ShowResultsCountLabel: string;
     ShowBlankLabel: string;
     ShowBlankEditInfoMessage: string;
@@ -40,6 +41,7 @@ declare interface ISearchResultsWebPartStrings {
     DialogButtonText: string;
     DialogTitle: string;
     SaveButtonText: string;
+    ResultsLayoutLabel: string;
     ListLayoutOption: string;
     TilesLayoutOption: string;
     CustomLayoutOption: string;
@@ -51,6 +53,9 @@ declare interface ISearchResultsWebPartStrings {
     HandlebarsHelpersDescription: string;
     PromotedResultsLabel: string;
     PanelCloseButtonAria:string;
+    UseRefinersWebPartLabel: string;
+    UseRefinersFromComponentLabel: string;
+    UsePaginationFromComponentLabel: string;
     customTemplateFieldsLabel: string;  
     customTemplateFieldsPanelHeader: string;  
     customTemplateFieldsConfigureButtonLabel: string;  
@@ -71,14 +76,6 @@ declare interface ISearchResultsWebPartStrings {
         SortableFieldManagedPropertyField: string;   
         SortableFieldDisplayValueField: string;
         EditSortableFieldsLabel: string;
-        EditSortLabel: string;
-    },
-    Refiners: {
-        RefinersFieldLabel: string;
-        RefinersFieldDescription: string;
-        RefinerManagedPropertyField: string;
-        RefinerDisplayValueField: string;
-        EditRefinersLabel: string;
         EditSortLabel: string;
     },
     ResultTypes: {

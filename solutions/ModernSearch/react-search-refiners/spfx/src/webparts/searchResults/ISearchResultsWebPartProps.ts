@@ -1,6 +1,5 @@
 import ResultsLayoutOption from '../../models/ResultsLayoutOption';
 import { DynamicProperty } from '@microsoft/sp-component-base';
-import IRefinerConfiguration from '../../models/IRefinerConfiguration';
 import { ISortFieldConfiguration } from '../../models/ISortFieldConfiguration';
 import ISortableFieldConfiguration from '../../models/ISortableFieldConfiguration';
 import { ISearchResultType } from '../../models/ISearchResultType';
@@ -16,7 +15,6 @@ export interface ISearchResultsWebPartProps {
     enableQueryRules: boolean;
     maxResultsCount: number;
     selectedProperties: string;
-    refiners: IRefinerConfiguration[];
     sortableFields: ISortableFieldConfiguration[];
     showPaging: boolean;
     showResultsCount: boolean;
@@ -32,4 +30,7 @@ export interface ISearchResultsWebPartProps {
     rendererId: string;
     customTemplateFieldValues: ICustomTemplateFieldValue[];
     enableLocalization: boolean;
+    useRefiners: boolean;
+    refinerDataSourceReference: string;
+    paginationDataSourceReference: string;
 }

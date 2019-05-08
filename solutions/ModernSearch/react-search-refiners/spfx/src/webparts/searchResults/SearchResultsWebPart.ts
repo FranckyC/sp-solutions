@@ -17,6 +17,7 @@ import {
     PropertyPaneChoiceGroup,
     PropertyPaneCheckbox,
     PropertyPaneHorizontalRule,
+    PropertyPaneDropdown,
 } from '@microsoft/sp-webpart-base';
 import * as strings from 'SearchResultsWebPartStrings';
 import SearchResultsContainer from './components/SearchResultsContainer/SearchResultsContainer';
@@ -41,11 +42,21 @@ import { ISortFieldConfiguration, ISortFieldDirection } from '../../models/ISort
 import { ResultTypeOperator } from '../../models/ISearchResultType';
 import IResultService from '../../services/ResultService/IResultService';
 import { ResultService, IRenderer } from '../../services/ResultService/ResultService';
-
+import { IDynamicDataCallables, IDynamicDataPropertyDefinition, IDynamicDataSource } from '@microsoft/sp-dynamic-data';
+import { IRefinementFilter } from '../../models/ISearchResult';
+import IDynamicDataService from '../../services/DynamicDataService/IDynamicDataService';
+import { DynamicDataService } from '../../services/DynamicDataService/DynamicDataService';
+import { DynamicProperty } from '@microsoft/sp-component-base';
+import IRefinerSourceData from '../../models/IRefinerSourceData';
+import IRefinerConfiguration from '../../models/IRefinerConfiguration';
+import { SearchComponentType } from '../../models/SearchComponentType';
+import ISearchResultSourceData from '../../models/ISearchResultSourceData';
+import IPaginationSourceData from '../../models/IPaginationSourceData';
+import * as update from 'immutability-helper';
 
 const LOG_SOURCE: string = '[SearchResultsWebPart_{0}]';
 
-export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchResultsWebPartProps> {
+export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchResultsWebPartProps> implements IDynamicDataCallables {
 
     private _searchService: ISearchService;
     private _taxonomyService: ITaxonomyService;
@@ -54,7 +65,12 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
     private _propertyFieldCodeEditor = null;
     private _propertyFieldCodeEditorLanguages = null;
     private _resultService: IResultService;
+    private _dynamicDataService: IDynamicDataService;
+    private _refinerSourceData: DynamicProperty<IRefinerSourceData>;
+    private _paginationSourceData: DynamicProperty<IPaginationSourceData>;
     private _codeRenderers: IRenderer[];
+    private _searchContainer : JSX.Element;
+    private _queryTemplate: string;
 
     /**
      * The template to display at render time
@@ -67,12 +83,8 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
     }
 
     public async render(): Promise<void> {
-        // Configure the provider before the query according to our needs
-        this._searchService.resultsCount = this.properties.maxResultsCount;
-        this._searchService.queryTemplate = await this.replaceQueryVariables(this.properties.queryTemplate);
-        this._searchService.resultSourceId = this.properties.resultSourceId;
-        this._searchService.sortList = this._convertToSortList(this.properties.sortList);
-        this._searchService.enableQueryRules = this.properties.enableQueryRules;
+        this._queryTemplate = await this.replaceQueryVariables(this.properties.queryTemplate);
+
         // Determine the template content to display
         // In the case of an external template is selected, the render is done asynchronously waiting for the content to be fetched
         await this._getTemplateContent();
@@ -91,50 +103,53 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
 
     protected renderCompleted(): void {
         super.renderCompleted();
-
-        let queryKeywords;
         let renderElement = null;
-        let dataSourceValue;
+        let refinerConfiguration: IRefinerConfiguration[] = [];
+        let selectedFilters: IRefinementFilter[] = [];
+        let selectedPage: number = 1;
 
-        let source = this.properties.queryKeywords.tryGetSource();
-
-        // Try to get the source if a source ID is present
-        // We need to do this check to avoid timing issues regarding data sources reconenction
-        if (!source && this.properties.sourceId) {
-            source = this.context.dynamicDataProvider.tryGetSource(this.properties.sourceId);
-
-            if (source && this.properties.propertyId) {
-                dataSourceValue = source.getPropertyValue(this.properties.propertyId)[this.properties.propertyPath];
-            }
-
-        } else {
-            dataSourceValue = this.properties.queryKeywords.tryGetValue();
-        }
-
-        if (typeof (dataSourceValue) !== 'string') {
-            dataSourceValue = '';
+        let queryDataSourceValue = this._dynamicDataService.getDataSourceValue(this.properties.queryKeywords, this.properties.sourceId, this.properties.propertyId, this.properties.propertyPath);
+        if (typeof (queryDataSourceValue) !== 'string') {
+            queryDataSourceValue = '';
             this.context.propertyPane.refresh();
         }
 
-        if (!dataSourceValue) {
-            queryKeywords = this.properties.defaultSearchQuery;
-        } else {
-            queryKeywords = dataSourceValue;
+        if (this._refinerSourceData) {
+            const refinerSourceData: IRefinerSourceData = this._refinerSourceData.tryGetValue();
+            if (refinerSourceData) {
+                refinerConfiguration = refinerSourceData.refinerConfiguration;
+                selectedFilters = refinerSourceData.selectedFilters;
+            }
         }
 
-        const isValueConnected = !!source;
-        const searchContainer: React.ReactElement<ISearchResultsContainerProps> = React.createElement(
+        // Configure the provider before the query according to our needs
+        this._searchService = update(this._searchService, {
+            resultsCount: {$set: this.properties.maxResultsCount},
+            queryTemplate: {$set: this._queryTemplate},
+            resultSourceId: {$set: this.properties.resultSourceId},
+            sortList: {$set: this._convertToSortList(this.properties.sortList)},
+            enableQueryRules: {$set: this.properties.enableQueryRules},
+            selectedProperties: {$set: this.properties.selectedProperties ? this.properties.selectedProperties.replace(/\s|,+$/g, '').split(',') : []},
+            refiners: {$set: refinerConfiguration},
+            refinementFilters: {$set: selectedFilters},
+        });
+
+        if (this._paginationSourceData) {
+            const paginationSourceData: IPaginationSourceData = this._paginationSourceData.tryGetValue();
+            if (paginationSourceData) {
+                selectedPage = paginationSourceData.selectedPage;
+            }
+        }
+        
+        let queryKeywords = (!queryDataSourceValue) ? this.properties.defaultSearchQuery : queryDataSourceValue;
+
+        const isValueConnected = !!this.properties.queryKeywords.tryGetSource();
+        this._searchContainer = React.createElement(
             SearchResultsContainer,
             {
                 searchService: this._searchService,
                 taxonomyService: this._taxonomyService,
                 queryKeywords: queryKeywords,
-                maxResultsCount: this.properties.maxResultsCount,
-                resultSourceId: this.properties.resultSourceId,
-                sortList: this._convertToSortList(this.properties.sortList),
-                enableQueryRules: this.properties.enableQueryRules,
-                selectedProperties: this.properties.selectedProperties ? this.properties.selectedProperties.replace(/\s|,+$/g, '').split(',') : [],
-                refiners: this.properties.refiners,
                 sortableFields: this.properties.sortableFields,
                 showPaging: this.properties.showPaging,
                 showResultsCount: this.properties.showResultsCount,
@@ -143,13 +158,29 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
                 templateService: this._templateService,
                 templateContent: this._templateContentToDisplay,
                 webPartTitle: this.properties.webPartTitle,
-                context: this.context,
+                currentUICultureName: this.context.pageContext.cultureInfo.currentUICultureName,
+                siteServerRelativeUrl: this.context.pageContext.site.serverRelativeUrl,
+                webServerRelativeUrl: this.context.pageContext.web.serverRelativeUrl,
                 resultTypes: this.properties.resultTypes,
                 useCodeRenderer: this.codeRendererIsSelected(),
                 customTemplateFieldValues: this.properties.customTemplateFieldValues,
                 rendererId: this.properties.selectedLayout as any,
-                resultService: this._resultService,
-                enableLocalization: this.properties.enableLocalization
+                enableLocalization: this.properties.enableLocalization,
+                selectedPage: selectedPage,
+                onSearchResultsUpdate: (results, mountingNodeId) => {
+                    if (this.properties.selectedLayout in ResultsLayoutOption)
+                    {
+                        let node = document.getElementById(mountingNodeId);
+                        if (node) {
+                            ReactDom.render(null, node);
+                        }
+                    }
+
+                    this._resultService.updateResultData(results, this.properties.selectedLayout as any, mountingNodeId, this.properties.customTemplateFieldValues);
+
+                    // Send notification to the connected search refiner component
+                    this.context.dynamicDataSourceManager.notifyPropertyChanged(SearchComponentType.SearchResultsWebPart);
+                }
             } as ISearchResultsContainerProps
         );
 
@@ -167,7 +198,7 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
         if (isValueConnected && !this.properties.useDefaultSearchQuery ||
             isValueConnected && this.properties.useDefaultSearchQuery && this.properties.defaultSearchQuery ||
             !isValueConnected && !isEmpty(queryKeywords)) {
-            renderElement = searchContainer;
+            renderElement = this._searchContainer;
         } else {
             if (this.displayMode === DisplayMode.Edit) {
                 renderElement = placeholder;
@@ -184,18 +215,21 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
         this.initializeRequiredProperties();
 
         if (Environment.type === EnvironmentType.Local) {
-            this._searchService = new MockSearchService();
             this._taxonomyService = new MockTaxonomyService();
             this._templateService = new MockTemplateService(this.context.pageContext.cultureInfo.currentUICultureName);
+            this._searchService = new MockSearchService();
 
         } else {
-
-            this._searchService = new SearchService(this.context);
             this._taxonomyService = new TaxonomyService(this.context.pageContext.site.absoluteUrl);
             this._templateService = new TemplateService(this.context.spHttpClient, this.context.pageContext.cultureInfo.currentUICultureName);
+            this._searchService = new SearchService(this.context);
         }
+        
         this._resultService = new ResultService();
         this._codeRenderers = this._resultService.getRegisteredRenderers();
+        this._dynamicDataService = new DynamicDataService(this.context.dynamicDataProvider);
+
+        this.ensureDataSourceConnection();
 
         if (this.properties.sourceId) {
             // Needed to retrieve manually the value for the dynamic property at render time. See the associated SPFx bug
@@ -205,6 +239,8 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
 
         // Set the default search results layout
         this.properties.selectedLayout = this.properties.selectedLayout ? this.properties.selectedLayout : ResultsLayoutOption.List;
+
+        this.context.dynamicDataSourceManager.initializeSource(this);
 
         return super.onInit();
     }
@@ -267,25 +303,6 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
     private initializeRequiredProperties() {
 
         this.properties.queryTemplate = this.properties.queryTemplate ? this.properties.queryTemplate : "{searchTerms} Path:{Site}";
-
-        if(<any>this.properties.refiners === "") {
-            this.properties.refiners = [];
-        }
-
-        this.properties.refiners = Array.isArray(this.properties.refiners) ? this.properties.refiners : [
-            {
-                refinerName: "Created",
-                displayValue: "Created Date"
-            },
-            {
-                refinerName: "Size",
-                displayValue: "Size of the file"
-            },
-            {
-                refinerName: "owstaxidmetadataalltagsinfo",
-                displayValue: "Tags"
-            }
-        ];
 
         if(!Array.isArray(this.properties.sortList) && !isEmpty(this.properties.sortList)) {
             this.properties.sortList = this._convertToSortConfig(this.properties.sortList);
@@ -379,6 +396,20 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
 
         if (!this.properties.useDefaultSearchQuery) {
             this.properties.defaultSearchQuery = '';
+        }
+
+        if (this.properties.refinerDataSourceReference || this.properties.paginationDataSourceReference) {
+            this.ensureDataSourceConnection();
+        }
+
+        if (!this.properties.useRefiners) {
+            this.properties.refinerDataSourceReference = undefined;
+            this._refinerSourceData = undefined;
+        }
+
+        if (!this.properties.showPaging) {
+            this.properties.paginationDataSourceReference = undefined;
+            this._paginationSourceData = undefined;
         }
 
         if (this.properties.enableLocalization) {
@@ -601,6 +632,13 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
      */
     private _getSearchSettingsFields(): IPropertyPaneField<any>[] {
 
+        const refinerWebParts = this._dynamicDataService.getAvailableDataSourcesByType(SearchComponentType.RefinersWebPart);
+        let useRefiners = this.properties.useRefiners;
+
+        if (this.properties.useRefiners && refinerWebParts.length === 0) {
+            useRefiners = false;
+        }
+
         // Sets up search settings fields
         const searchSettingsFields: IPropertyPaneField<any>[] = [
             PropertyPaneTextField('queryTemplate', {
@@ -674,6 +712,10 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
                     }
                 ]
             }),
+            PropertyPaneToggle('useRefiners', {
+                label: strings.UseRefinersWebPartLabel,
+                checked: useRefiners
+            }),
             PropertyPaneToggle('enableQueryRules', {
                 label: strings.EnableQueryRulesLabel,
                 checked: this.properties.enableQueryRules,
@@ -685,28 +727,6 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
                 resizable: true,
                 value: this.properties.selectedProperties,
                 deferredValidationTime: 300
-            }),
-            PropertyFieldCollectionData('refiners', {
-                manageBtnLabel: strings.Refiners.EditRefinersLabel,
-                key: 'refiners',
-                enableSorting: true,
-                panelHeader: strings.Refiners.EditRefinersLabel,
-                panelDescription: strings.Refiners.RefinersFieldDescription,
-                label: strings.Refiners.RefinersFieldLabel,
-                value: this.properties.refiners,
-                fields: [
-                    {
-                        id: 'refinerName',
-                        title: strings.Refiners.RefinerManagedPropertyField,
-                        type: CustomCollectionFieldType.string,
-                        placeholder: '\"RefinableStringXXX\", etc.'
-                    },
-                    {
-                        id: 'displayValue',
-                        title: strings.Refiners.RefinerDisplayValueField,
-                        type: CustomCollectionFieldType.string
-                    }
-                ]
             }),
             PropertyPaneSlider('maxResultsCount', {
                 label: strings.MaxResultsCount,
@@ -723,8 +743,57 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
                 offText: strings.EnableLocalizationOffLabel
             })
         ];
+        
+        if (this.properties.useRefiners) {
+
+            searchSettingsFields.splice(5, 0,  
+                PropertyPaneDropdown('refinerDataSourceReference', {
+                options: this._dynamicDataService.getAvailableDataSourcesByType(SearchComponentType.RefinersWebPart),
+                label: strings.UseRefinersFromComponentLabel
+            }));
+        }
 
         return searchSettingsFields;
+    }
+
+    /**
+     * Make sure the dynamic property is correctly connected to the source if a search refiner component has been selected in options 
+     */
+    private ensureDataSourceConnection() {
+
+        if (this.properties.refinerDataSourceReference) {
+    
+            if (!this._refinerSourceData) {
+                this._refinerSourceData = new DynamicProperty<IRefinerSourceData>(this.context.dynamicDataProvider);
+            }
+            
+            // Register the data source manually since we don't want user select properties manually
+            this._refinerSourceData.setReference(this.properties.refinerDataSourceReference);
+            this._refinerSourceData.register(this.render);
+
+        } else {
+        
+            if (this._refinerSourceData) {
+                this._refinerSourceData.unregister(this.render);
+            }
+        }
+
+        if (this.properties.paginationDataSourceReference) {
+    
+            if (!this._paginationSourceData) {
+                this._paginationSourceData = new DynamicProperty<IPaginationSourceData>(this.context.dynamicDataProvider);
+            }
+            
+            // Register the data source manually since we don't want user select properties manually
+            this._paginationSourceData.setReference(this.properties.paginationDataSourceReference);
+            this._paginationSourceData.register(this.render);
+
+        } else {
+        
+            if (this._paginationSourceData) {
+                this._paginationSourceData.unregister(this.render);
+            }
+        }
     }
 
     /**
@@ -865,15 +934,24 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
                 checked: this.properties.showResultsCount,
             }),
             PropertyPaneToggle('showPaging', {
-                label: strings.ShowPagingLabel,
+                label: strings.UsePaginationWebPartLabel,
                 checked: this.properties.showPaging,
             }),
             PropertyPaneHorizontalRule(),
             PropertyPaneChoiceGroup('selectedLayout', {
-                label: 'Results layout',
+                label: strings.ResultsLayoutLabel,
                 options: layoutOptions
             }),
         ];
+
+        if (this.properties.showPaging) {
+            stylingFields.splice(4, 0,  
+                PropertyPaneDropdown('paginationDataSourceReference', {
+                options: this._dynamicDataService.getAvailableDataSourcesByType(SearchComponentType.PaginationWebPart),
+                label: strings.UsePaginationFromComponentLabel
+            }));
+        }
+
         if (!this.codeRendererIsSelected()) {
             stylingFields.push(
                 this._propertyFieldCodeEditor('inlineTemplateText', {
@@ -1001,7 +1079,7 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
                     };
                 });
             }
-            if (currentCodeRenderer.customFields && currentCodeRenderer.customFields.length > 0) {
+            if (currentCodeRenderer && currentCodeRenderer.customFields && currentCodeRenderer.customFields.length > 0) {
                 const searchPropertyOptions = this.properties.selectedProperties.split(',').map(prop => {
                     return ({
                         key: prop,
@@ -1054,5 +1132,37 @@ export default class SearchResultsWebPart extends BaseClientSideWebPart<ISearchR
     protected codeRendererIsSelected(): boolean {
         const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
         return guidRegex.test(this.properties.selectedLayout as any);
+    }
+
+    public getPropertyDefinitions(): ReadonlyArray<IDynamicDataPropertyDefinition> {
+
+        // Use the Web Part title as property title since we don't expose sub properties
+        return [
+            {
+              id: SearchComponentType.SearchResultsWebPart,
+              title: this.properties.webPartTitle ? this.properties.webPartTitle : this.title
+            }
+        ];
+    }
+
+    public getPropertyValue(propertyId: string): ISearchResultSourceData {
+
+        const searchResultSourceData: ISearchResultSourceData = {
+            queryKeywords: this._dynamicDataService.getDataSourceValue(this.properties.queryKeywords, this.properties.sourceId, this.properties.propertyId, this.properties.propertyPath),
+            refinementResults: (this._resultService && this._resultService.results) ? this._resultService.results.RefinementResults : [],
+            paginationInformation: (this._resultService && this._resultService.results) ? this._resultService.results.PaginationInformation : {
+                CurrentPage: 1,
+                MaxResultsPerPage: this.properties.maxResultsCount,
+                TotalRows: 0
+            },
+            searchServiceConfiguration: this._searchService.getConfiguration()
+        };
+
+        switch (propertyId) {
+            case SearchComponentType.SearchResultsWebPart:
+                return searchResultSourceData;
+        }
+        
+        throw new Error('Bad property id');
     }
 }

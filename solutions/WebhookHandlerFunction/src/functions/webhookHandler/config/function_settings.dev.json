@@ -1,0 +1,22 @@
+{
+    "authSettings": {
+        "appId": "00000000-0000-0000-0000-000000000000",
+        "tenant": "mytenant.onmicrosoft.com",
+        "resource": "https://mytenant.sharepoint.com",
+        "certificateThumbPrint": "",
+        "certificatePath": ".\\config\\key.pem"
+    },
+    "sharePointSettings": {
+        "listId": "a9f80191-f743-4da8-aa89-f2f4c99f62b7",
+        "webUrl": "https://mytenant.sharepoint.com/sites/test"
+    },
+    "webhookSettings": {
+        "subscriptionIdentifier": "site-provisioning-demo",
+        "notificationUrl": "https://demo-function.azurewebsites.net/api/webhookhandler?code=8rfaHoQQqszkTxZ3NXyrHP4yEIUym5A3J8KaVzgtSQQkrL9bM41bmQ==",
+        "targetEndpointUrl": "<my_logic_app_endpoint_URL>"
+    },
+    "azureStorageSettings": {
+        "connectionString": "",
+        "azureTableName": "WebhookStateTable"
+    }
+}   
