@@ -12,5 +12,6 @@ The following files are available:
 
 A complete blog post is available here explaining the pipeline: 
 
+[http://thecollaborationcorner.com/2019/02/28/azure-devops-with-spfx-gitflow-gitversion/](http://thecollaborationcorner.com/2019/02/28/azure-devops-with-spfx-gitflow-gitversion/)
 
 <img src="./images/blog_post_featured.png"/>
