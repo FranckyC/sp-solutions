@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import { StorageHelper } from "./StorageHelper";
 import IWebhookSubcriptionData from "../models/IWebhookSubcriptionData";
 import { IChangeQuery } from '../models/IChangeQuery';
 import IChangeItem from '../models/IChangeItem';

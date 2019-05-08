@@ -16,7 +16,17 @@ With Microsoft Flow, the issue is slighty different because here, the polling fr
 
 <p align="center"><img width="500px" src="./images/flow-plans.png"/><p>
 
-Instead of relying on a polling strategy, this function leverages SharePoint webhooks to get notified when a new event occurs. This way, you don't have to worry of the trigger frequency anymore. The webhook subscription logic and updates retrieval are generic so you can reuse them easily in your solution. 
+Instead of relying on a polling strategy, this function leverages SharePoint webhooks to get notified when a new event occurs. This way, you don't have to worry of the trigger frequency anymore. The webhook subscription logic and updates retrieval are generic so you can reuse them easily in your solution. The function ensures the webhook subscription by creating one if doesn't exist or renew if expired.
+
+## Applies to
+
+* [Office 365 tenant](https://dev.office.com/sharepoint/docs/spfx/set-up-your-development-environment)
+
+## Solution
+
+Solution| Contributors(s)
+--------|---------
+WebhookHandlerFunction | Franck Cornu (aequos) - [@FranckCornu](http://www.twitter.com/FranckCornu)
 
 ## Prerequisites
 
@@ -24,7 +34,7 @@ Instead of relying on a polling strategy, this function leverages SharePoint web
 
 This solution uses an Azure AD application with a certificate to communicate with SharePoint. It means you need to:
 
-1.  Create an Azure AD app with the correct permissions and associate it a certificate. You can refer to the following [procedure](https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread).
+1.  Create an Azure AD app with the correct application permissions (ex: '_Sites.FullControl.All_') and associate it a certificate. You can refer to the following [procedure](https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread).
 
 
 2.  Generate the certificate private key in _*.pem_ format and copy it to the _'./config'_ folder of your function. Use the [OpenSSL](https://wiki.openssl.org/index.php/Binaries) tool and the following command to generate the _.pem_ key from the _.pfx_ certificate:
@@ -38,6 +48,12 @@ You can also use the [`Get-PnPAzureCertificate`](https://docs.microsoft.com/en-u
 ```
 Get-PnPAzureCertificate -CertificatePath "C:\<your_certificate>.pfx -" -CertificatePassword (ConvertTo-SecureString -String '<your_password>' -AsPlainText -Force)
 ```
+
+### Create an Azure Table
+
+This solution uses an Azure storage table to save the change token in order to track updates timeline from the list. The default table name is '_WebhookStateTable_':
+
+<p align="center"><img width="500px" src="./images/azure_table.png"/>
 
 ### Create an HTTP triggered Logic App
 
@@ -62,7 +78,26 @@ Then, set the logic app URL in the `function_settings.dev.json` settings file:
 ...
 ```
 
-Notice only the item ID is the sent by the function. To get item proeprties, use the appropriate Logic App SharePoint action.
+Notice only the item ID is the sent by the function. To get item properties, use the appropriate Logic App SharePoint action.
+
+### Configure settings
+
+Configure other settings in the `function_settings.dev.json` settings file:
+
+| Setting       | Description |
+| -------       | ----------- |
+| *appId*         | The Azure AD app id
+| *tenant*        | The Office 365 tenant URL
+| *resource*      | The SharePoint resource URL for you tenant
+| *certificateThumbPrint*              | The Azure AD app certificate thumbprint
+| *certificatePath*   | The certificate private key file path
+| *listId*    | The SharePoint list ID to get updates from
+| *webUrl*    | The web URL of the SharePoint list
+| *subscriptionIdentifier* | An unique identifier for the SharePoint webhook subscription. Optional
+| *notificationUrl* | The webhook notification URL. Should be the `ngrok` generated URL or the function URL in Azure
+| *targetEndpointUrl* | The Logic App URL to call when a event is received from the list  
+| *connectionString* | The Azure storage connection string to get/set the change token
+| *azureTableName*    | The Azure storage table name
 
 ## Usage 
 
@@ -98,17 +133,13 @@ const webhookHelper = new SharePointWebHookHelper(webUrl, token.accessToken);
 webhookHelper.expirationRenewalDays = 30;
 ```
 
-### Set the Logic App target endpoint URL
-
-Because this function is intented to replace a Logic App trigger, you can set your  
-
 ### How to debug this function locally ?
 
 - In VSCode, open the root folder `./`.
 - Install all dependencies using `npm i`.
 - Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest) on youre machine.
 - Install Azure Function Core tools globaly using `npm install -g azure-functions-core-tools@2` (version 2).
-- Install [DotNet Core SDK](https://dotnet.microsoft.com/download)
+- Install [Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/) to view or edit the change token
 - Install ngork using `npm i -g ngrok`
 - To test the webhook from SharePoint, in a Node.js console, use `ngrok` to redirect to your localhost function and set the generated URL as the webhook notification URL in the `function_settings.dev.json` file (i.e. _http://fc9de7d0.ngrok.io/api/webhookHandler_)
 
@@ -124,6 +155,9 @@ ngrok http 7071
 
 - From VSCode, Launch the *'Debug Local Azure Function'* debug configuration 
 - Register the webhook either sending an empty POST request using Postman or use the PnP PowerSell cmdlet `Add-PnPWebhookSubscription`. Your function should be triggered at this step.
+
+<p align="center"><img width="500px" src="./images/postman.png"/><p>
+
 - Create a new item in the targeted SharePoint list to see the function trigerred as well.
 
 #### Debug tests
